@@ -1,4 +1,10 @@
-export const API = 'http://localhost:3000/api';
+// Vercel'de VITE_API_URL tanımlanır. Değişken unutulursa canlı alan adında
+// Render API'sine, yerelde ise lokal API'ye güvenli bir varsayılan uygulanır.
+const yereldeMi = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const varsayilanApi = yereldeMi
+  ? "http://localhost:3000/api"
+  : "https://kayseri-yesilalan.onrender.com/api";
+export const API = (import.meta.env.VITE_API_URL || varsayilanApi).replace(/\/$/, '');
 
 export const renkler = {
   park: '#2d6a4f', tuvalet: '#1d4ed8', cocuk_oyun_alani: '#f97316', spor_sahasi: '#9333ea',

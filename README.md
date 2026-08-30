@@ -68,6 +68,57 @@ npm run build
 
 Derlenmiş vatandaş arayüzü `frontend-react/dist/` altında oluşur.
 
+## Render + Vercel ile canlıya alma
+
+Bu depo bir monorepo'dur. Canlıda üç ayrı servis/proje kullanın:
+
+1. **Render Postgres:** Yeni PostgreSQL veritabanı oluşturun ve PostGIS'i etkinleştirin:
+
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS postgis;
+   ```
+
+   Bu depoda şema/migration dosyası bulunmadığından, mevcut yerel veritabanınızın şema ve verisini de bu veritabanına aktarmanız gerekir. Önce yerelde yedek alın, ardından Render'ın verdiği bağlantı ile geri yükleyin:
+
+   ```powershell
+   pg_dump -Fc -d kayseri_cbs -f kayseri-cbs.backup
+   pg_restore --no-owner --clean --if-exists -d "RENDER_DATABASE_URL" kayseri-cbs.backup
+   ```
+
+2. **Render Web Service (API):** GitHub deposunu seçin ve aşağıdaki ayarları kullanın.
+
+   | Ayar | Değer |
+   | --- | --- |
+   | Root Directory | `backend` |
+   | Runtime | Node |
+   | Build Command | `npm ci` |
+   | Start Command | `node server.js` |
+   | Environment | `DATABASE_URL` = Render veritabanının **Internal Database URL** değeri |
+   | Environment | `NODE_VERSION` = `20.19.0` |
+
+   Deploy tamamlanınca Render'ın verdiği adresi not edin. Örnek: `https://kayseri-cbs-api.onrender.com`.
+
+3. **Vercel – vatandaş sitesi:** Yeni proje oluşturun, aynı GitHub deposunu seçin ve **Root Directory** olarak `frontend-react` seçin. Vercel Vite ayarlarını otomatik algılar; Build Command `npm run build`, Output Directory `dist` olmalıdır. Project Settings → Environment Variables'a aşağıdakini ekleyip yeniden deploy edin:
+
+   ```env
+   VITE_API_URL=https://kayseri-yesilalan.onrender.com/api
+   ```
+
+4. **Vercel – yönetim paneli:** Ayrı bir Vercel projesi oluşturun, Root Directory olarak `frontend` seçin. Bu proje statik dosya olarak yayınlanır; Build Command boş, Output Directory `.` olur. Deploy etmeden önce `frontend/js/config.js` içindeki `API` değerini Render adresinizle değiştirin:
+
+   ```js
+   export const API = "https://kayseri-yesilalan.onrender.com/api";
+   ```
+
+Canlı kontroller:
+
+- `https://API_ADRESIN.onrender.com/api/yesil-alanlar` bir GeoJSON cevabı vermeli.
+- `https://API_ADRESIN.onrender.com/api/saglik` `durum: "calisiyor"` cevabı vermeli.
+- Vatandaş sitesi parkları yüklemeli.
+- Yönetim panelinde tesis eklenip seçilen parkın tesis sayısı artmalı.
+
+> Render ve Vercel farklı alan adlarında çalışacağından API'deki CORS yapılandırması gereklidir. Proje şu anda bunu destekliyor; canlıda yalnızca kendi Vercel alan adlarını izinli bırakmak daha güvenlidir.
+
 ## API özeti
 
 | Yöntem | Adres                               | Açıklama                        |

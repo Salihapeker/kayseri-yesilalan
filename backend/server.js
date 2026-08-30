@@ -10,6 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Dağıtım kontrolü: Bu endpoint veritabanına sorgu yapmaz.
+// 200 dönüyorsa Render üzerindeki Express uygulaması çalışıyordur.
+app.get("/api/saglik", (_req, res) => {
+  res.json({ durum: "calisiyor", zaman: new Date().toISOString() });
+});
+
 app.use("/api/yesil-alanlar", yesilAlanRoutes);
 app.use("/api/tesisler", tesisRoutes);
 app.get("/api/yakinimdakiler", TesisController.yakinimdakiler);
