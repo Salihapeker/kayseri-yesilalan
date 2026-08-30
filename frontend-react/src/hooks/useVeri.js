@@ -6,13 +6,18 @@ import { noktaCiz } from "./useHarita";
 export function useVeriYukle(map, katmanlar, onParkTikla, onTesisTikla) {
   const [aramaIndeksi, setAramaIndeksi] = useState([]);
   const [tesisSayilari, setTesisSayilari] = useState({});
+  const [veriDurumu, setVeriDurumu] = useState("yukleniyor");
 
   useEffect(() => {
     if (!map || !katmanlar) return;
 
     // --- Parklar ---
+    setVeriDurumu("yukleniyor");
     fetch(`${API}/yesil-alanlar`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Park verisi alınamadı");
+        return r.json();
+      })
       .then((data) => {
         const kokStil = getComputedStyle(document.documentElement);
         const mevsimVurgu =
@@ -72,7 +77,9 @@ export function useVeriYukle(map, katmanlar, onParkTikla, onTesisTikla) {
         });
         setAramaIndeksi(yeniIndeks);
         setTesisSayilari((s) => ({ ...s, park: yeniIndeks.length, ...sayaçCozum }));
-      });
+        setVeriDurumu("hazir");
+      })
+      .catch(() => setVeriDurumu("hata"));
 
     // --- Tesisler (artık tıklanınca panel açıyor, eski Leaflet balonu yok) ---
     fetch(`${API}/tesisler`)
@@ -102,5 +109,5 @@ export function useVeriYukle(map, katmanlar, onParkTikla, onTesisTikla) {
       });
   }, [map, katmanlar]);
 
-  return { aramaIndeksi, tesisSayilari };
+  return { aramaIndeksi, tesisSayilari, veriDurumu };
 }

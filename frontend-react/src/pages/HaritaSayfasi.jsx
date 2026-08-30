@@ -76,7 +76,7 @@ export default function HaritaSayfasi({ mevsim, onMevsimSec }) {
     kopyalandi,
     setKopyalandi,
   } = useDetayPaneli();
-  const { aramaIndeksi, tesisSayilari } = useVeriYukle(
+  const { aramaIndeksi, tesisSayilari, veriDurumu } = useVeriYukle(
     map,
     katmanlar,
     goster,
@@ -221,6 +221,19 @@ export default function HaritaSayfasi({ mevsim, onMevsimSec }) {
                 onParkGorunurYap={parkGorunurYap}
                 onSonucSecildi={goster}
               />
+              {veriDurumu === "yukleniyor" && <div className="veri-bilgi">Harita kayıtları yükleniyor…</div>}
+              {veriDurumu === "hazir" && aramaIndeksi.length === 0 && (
+                <div className="veri-bilgi bos">
+                  <b>Henüz kayıtlı park yok.</b>
+                  <span>Yönetim panelinden alan eklediğinizde burada görünür.</span>
+                </div>
+              )}
+              {veriDurumu === "hata" && (
+                <div className="veri-bilgi hata">
+                  <b>Park verisine erişilemedi.</b>
+                  <span>Bağlantıyı kontrol edip sayfayı yenileyin.</span>
+                </div>
+              )}
               <div className="panel-sekmeler" role="tablist">
                 <button className={panelSekmesi === "kesfet" ? "aktif" : ""} onClick={() => setPanelSekmesi("kesfet")}>Keşfet</button>
                 <button className={panelSekmesi === "filtre" ? "aktif" : ""} onClick={() => setPanelSekmesi("filtre")}>Filtrele</button>
