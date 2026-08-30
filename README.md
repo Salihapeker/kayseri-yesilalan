@@ -72,13 +72,7 @@ Derlenmiş vatandaş arayüzü `frontend-react/dist/` altında oluşur.
 
 Bu depo bir monorepo'dur. Canlıda üç ayrı servis/proje kullanın:
 
-1. **Render Postgres:** Yeni PostgreSQL veritabanı oluşturun ve PostGIS'i etkinleştirin:
-
-   ```sql
-   CREATE EXTENSION IF NOT EXISTS postgis;
-   ```
-
-   Bu depoda şema/migration dosyası bulunmadığından, mevcut yerel veritabanınızın şema ve verisini de bu veritabanına aktarmanız gerekir. Önce yerelde yedek alın, ardından Render'ın verdiği bağlantı ile geri yükleyin:
+1. **Render Postgres:** Yeni PostgreSQL veritabanı oluşturun. API açılışta PostGIS'i, tabloları ve gerekli indeksleri otomatik kurar (`backend/database/init.sql`). Mevcut yerel verinizi taşımak isterseniz önce yerelde yedek alın, ardından Render'ın verdiği bağlantı ile geri yükleyin:
 
    ```powershell
    pg_dump -Fc -d kayseri_cbs -f kayseri-cbs.backup

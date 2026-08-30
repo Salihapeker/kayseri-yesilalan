@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import { semayiKur } from "./db.js";
 
 import yesilAlanRoutes from "./routes/yesilAlanRoutes.js";
 import tesisRoutes from "./routes/tesisRoutes.js";
@@ -21,6 +22,17 @@ app.use("/api/tesisler", tesisRoutes);
 app.get("/api/yakinimdakiler", TesisController.yakinimdakiler);
 app.get("/api/son-eklenenler", TesisController.sonEklenenler);
 
-app.listen(process.env.PORT, () => {
-  console.log(`API çalışıyor: http://localhost:${process.env.PORT}`);
-});
+async function baslat() {
+  try {
+    await semayiKur();
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`API çalışıyor: http://localhost:${port}`);
+    });
+  } catch (hata) {
+    console.error("Veritabanı şeması kurulamadı:", hata);
+    process.exit(1);
+  }
+}
+
+baslat();
