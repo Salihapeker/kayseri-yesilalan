@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kayseri CBS - Yönetim Paneli</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"
+    />
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+  <body>
+    <div id="app">
+      <aside id="sidebar">
+        <div class="yonetim-marka"><img src="img/kbb-logo.png" alt="Kayseri Büyükşehir Belediyesi" /><div><span>Kayseri Büyükşehir Belediyesi</span><b>Yeşil Alan Yönetimi</b></div><small>CBS</small></div>
+
+        <div class="yonetim-bolum-baslik">KAYIT BUL</div>
+        <input type="text" id="arama-kutu" placeholder="Park adı ara..." />
+        <div id="arama-sonuc"></div>
+
+        <hr />
+        <div class="yonetim-bolum-satir"><span>SON GÜNCELLENENLER</span><span id="admin-kayit-sayisi">—</span></div>
+        <div id="son-eklenenler-liste">Yükleniyor...</div>
+
+        <div class="cizim-bilgi"><b>Yeni kayıt ekle</b><span>Haritadaki çizim araçlarından alan veya tesis ekleyin.</span></div>
+      </aside>
+
+      <main id="admin-calismalik">
+        <header id="admin-ustbar">
+          <div><span>COĞRAFİ BİLGİ SİSTEMİ</span><strong>Yeşil alan envanteri</strong></div>
+          <div class="admin-ustbar-sag"><span class="admin-canli-nokta"></span><span>Canlı envanter</span></div>
+        </header>
+        <div id="map"></div>
+        <div id="admin-harita-ipucu">Bir park seçin; detaylar sağ panelde açılır.</div>
+      </main>
+    </div>
+
+    <!-- Düzenleme penceresi -->
+    <div id="modal-overlay">
+      <div id="modal">
+        <button id="modal-kapat">✕</button>
+        <div class="modal-ustbilgi"><span>PARK KAYDI</span><b>Envanter ve vatandaş görünümü</b></div>
+        <input
+          type="text"
+          id="modal-isim"
+          class="modal-baslik-input"
+          placeholder="Park adı"
+        />
+        <input
+          type="text"
+          id="modal-mahalle"
+          class="modal-alt-input"
+          placeholder="Mahalle"
+        />
+
+        <div class="modal-bolum-baslik">Tesis ve olanaklar</div>
+        <div id="modal-tesisler"></div>
+
+        <div class="modal-bolum-baslik">Vatandaş bilgisi</div>
+        <div class="form-ikili"><div><label for="ozellik-bakim-durumu">Kullanım durumu</label><select id="ozellik-bakim-durumu"><option value="acik">Ziyarete açık</option><option value="bakimda">Geçici bakım çalışması</option><option value="proje">İyileştirme projesi</option></select></div><div><label for="ozellik-son-guncelleme">Envanter notu / tarih</label><input type="text" id="ozellik-son-guncelleme" placeholder="Örn. Ağustos 2026" /></div></div>
+        <label for="ozellik-kisa-aciklama">Kısa açıklama</label>
+        <textarea id="ozellik-kisa-aciklama" rows="3" placeholder="Kullanıcıya gösterilecek kısa, anlaşılır bilgi"></textarea>
+        <label for="ozellik-etiketler">Keşif etiketleri</label>
+        <input type="text" id="ozellik-etiketler" placeholder="Örn. gölgeli, aile dostu, yürüyüş" />
+        <p class="alan-yardim">Etiketleri virgülle ayırın. Harita detayında küçük rozetler olarak görünür.</p>
+        <div class="modal-bolum-baslik">Erişim ve kullanım</div>
+        <div class="checkbox-izgara"><div class="checkbox-satir"><input type="checkbox" id="ozellik-aydinlatma" /><label for="ozellik-aydinlatma">Aydınlatma var</label></div><div class="checkbox-satir"><input type="checkbox" id="ozellik-engelli" /><label for="ozellik-engelli">Engelli erişimi var</label></div></div>
+        <div class="form-ikili"><div>
+        <label>Açılış saatleri</label>
+        <input
+          type="text"
+          id="ozellik-saatler"
+          placeholder="Örn. 06:00 - 24:00"
+        />
+        </div><div>
+        <label>Otopark kapasitesi (araç)</label>
+        <input
+          type="number"
+          id="ozellik-otopark-kapasite"
+          placeholder="Örn. 40"
+        />
+        </div></div>
+
+        <button id="detayli-goster-btn" class="ikincil-buton">
+          Tesisleri tek tek isimlendir ▾
+        </button>
+        <div id="modal-tesis-liste" style="display: none"></div>
+
+        <div class="modal-alt-butonlar">
+          <button id="ozellik-kaydet-btn">Kaydet</button>
+          <button id="park-sil-btn" class="tehlike">Parkı sil</button>
+        </div>
+        <div id="duzenle-durum"></div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+    <script type="module" src="js/admin-main.js"></script>
+  </body>
+</html>

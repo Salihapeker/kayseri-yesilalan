@@ -1,0 +1,12 @@
+{
+  "name": "Kayseri Yeşil Alanlar",
+  "short_name": "Yeşil Alanlar",
+  "description": "Kayseri'nin parklarını ve açık hava olanaklarını keşfedin.",
+  "start_url": "/#/",
+  "display": "standalone",
+  "background_color": "#f4f7f2",
+  "theme_color": "#185448",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

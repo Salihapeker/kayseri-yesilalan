@@ -1,0 +1,15 @@
+# Dependencies and generated outputs
+**/node_modules/
+frontend-react/dist/
+frontend/.vite/
+
+# Local configuration and editor files
+backend/.env
+.DS_Store
+Thumbs.db
+@'
+node_modules/
+.env
+dist/
+*.log
+'@ | Set-Content -Encoding utf8 .gitignore
