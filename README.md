@@ -1,6 +1,5 @@
 # Kayseri Yeşil Alanlar CBS
-
-Kayseri Büyükşehir Belediyesi Coğrafi Bilgi Sistemleri Şube Müdürlüğü ile geliştirilen, parklar ve açık alan tesislerini vatandaşlar ile yönetim birimi için haritada sunan uygulama.
+Parklar ve açık alan tesislerini vatandaşlar ile yönetim birimi için haritada sunan uygulama.
 
 ## Uygulamalar
 
